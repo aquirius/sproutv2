@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"net"
+	"net/http"
+	"net/rpc"
 	"os"
 	"sprout/m/v2/internal/systems/core"
 	"sprout/m/v2/internal/systems/login"
@@ -32,6 +35,23 @@ func connectSQL(dsn string) *sqlx.DB {
 	return sqlx.MustConnect("mysql", mysqlDSN)
 }
 
+type Arith int
+
+func connectHTTP(port int) {
+	arith := new(Arith)
+	rpc.Register(arith)
+	rpc.HandleHTTP()
+	l, e := net.Listen("tcp", ":1234")
+	if e != nil {
+		log.Fatal("listen error:", e)
+	}
+	go http.Serve(l, nil)
+}
+
+func connectRPC() {
+	rpc.ServeConn()
+}
+
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
@@ -48,9 +68,11 @@ func BuildRuntime() Runtime {
 		panic(err)
 	}
 	sql := connectSQL(mysqlDSN)
+	connectHTTP(1337)
 
 	coreProvider := core.NewCoreProvider(sql, "sql")
 	loginProvider := login.NewLoginProvider()
+
 	return Runtime{
 		db:    *sql,
 		core:  *coreProvider.Core,
