@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -35,21 +37,40 @@ func connectSQL(dsn string) *sqlx.DB {
 	return sqlx.MustConnect("mysql", mysqlDSN)
 }
 
-type Arith int
+type CurrentUser struct {
+	customer login.Customer
+}
 
-func connectHTTP(port int) {
-	arith := new(Arith)
-	rpc.Register(arith)
+func connectRPC(port int) error {
+	login := new(login.Login)
+	//core := new(core.Core)
+
+	err := rpc.Register(login)
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*err = rpc.Register(core)
+	if err != nil {
+		log.Fatal(err)
+	}*/
+
 	rpc.HandleHTTP()
-	l, e := net.Listen("tcp", ":1234")
+	l, e := net.Listen("tcp", fmt.Sprintf(":%d", port))
+
+	fmt.Println(l.Addr().String())
 	if e != nil {
 		log.Fatal("listen error:", e)
 	}
-	go http.Serve(l, nil)
+
+	http.Serve(l, nil)
+	return nil
 }
 
-func connectRPC() {
-	rpc.ServeConn()
+func connectFrontend(port int) error {
+	frontend := http.FileServer(http.Dir("../../frontend/index.html"))
+
+	http.Handle("/", frontend)
+	return nil
 }
 
 func init() {
@@ -62,14 +83,28 @@ type Runtime struct {
 	login login.Login
 }
 
+func handleCreateCustomer() error {
+	p := &login.CreateCustomerV1Params{}
+	res := &login.CreateCustomerV1Result{}
+	login.NewLoginProvider().Login.CreateCustomerV1(p, res)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(res)
+		json.NewEncoder(w).Encode(res.Customer)
+	})
+	return nil
+}
+
 func BuildRuntime() Runtime {
 	// create uploads folder if it doesn't exist
 	if err := os.MkdirAll("uploads", 0777); err != nil {
 		panic(err)
 	}
 	sql := connectSQL(mysqlDSN)
-	connectHTTP(1337)
-
+	handleCreateCustomer()
+	rpcErr := connectRPC(1234)
+	if rpcErr != nil {
+		log.Fatal(rpcErr)
+	}
 	coreProvider := core.NewCoreProvider(sql, "sql")
 	loginProvider := login.NewLoginProvider()
 
@@ -80,6 +115,22 @@ func BuildRuntime() Runtime {
 	}
 }
 
+func getRPC() {
+	client, err := rpc.DialHTTP("tcp", ":1234")
+
+	if err != nil {
+		log.Fatalf("Error in dialing. %s", err)
+	}
+	args := &login.CreateCustomerV1Params{}
+	var result login.CreateCustomerV1Result
+	err = client.Call("Login.CreateCustomerV1", args, &result)
+	if err != nil {
+		log.Fatalf("error in Arith", err)
+	}
+	log.Printf("asdf", result.Customer.Email)
+}
+
 func main() {
 	BuildRuntime()
+	getRPC()
 }

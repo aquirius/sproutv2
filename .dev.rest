@@ -1,8 +1,8 @@
-POST http://localhost:8080/api
+POST http://localhost:1234/
 
 {
 	"id": 1,
-	"method": "",
+	"method": "login/create-customer-v1",
 	"params": {
 
 	}
