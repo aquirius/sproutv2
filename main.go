@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -10,6 +9,7 @@ import (
 	"os"
 	"sprout/m/v2/internal/systems/core"
 	"sprout/m/v2/internal/systems/login"
+	"sprout/m/v2/internal/systems/user"
 
 	//"github.com/jmoiron/sqlx"
 	_ "github.com/go-sql-driver/mysql"
@@ -66,13 +66,6 @@ func connectRPC(port int) error {
 	return nil
 }
 
-func connectFrontend(port int) error {
-	frontend := http.FileServer(http.Dir("../../frontend/index.html"))
-
-	http.Handle("/", frontend)
-	return nil
-}
-
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
@@ -83,24 +76,12 @@ type Runtime struct {
 	login login.Login
 }
 
-func handleCreateCustomer() error {
-	p := &login.CreateCustomerV1Params{}
-	res := &login.CreateCustomerV1Result{}
-	login.NewLoginProvider().Login.CreateCustomerV1(p, res)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(res)
-		json.NewEncoder(w).Encode(res.Customer)
-	})
-	return nil
-}
-
 func BuildRuntime() Runtime {
 	// create uploads folder if it doesn't exist
 	if err := os.MkdirAll("uploads", 0777); err != nil {
 		panic(err)
 	}
 	sql := connectSQL(mysqlDSN)
-	handleCreateCustomer()
 	rpcErr := connectRPC(1234)
 	if rpcErr != nil {
 		log.Fatal(rpcErr)
@@ -132,5 +113,11 @@ func getRPC() {
 
 func main() {
 	BuildRuntime()
-	getRPC()
+	mux := http.NewServeMux()
+
+	userH := &user.UserHandler{}
+	mux.Handle("/users", userH)
+	mux.Handle("/", userH)
+
+	http.ListenAndServe(":1234", mux)
 }
