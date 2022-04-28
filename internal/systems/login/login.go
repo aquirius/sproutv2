@@ -3,6 +3,8 @@ package login
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type LoginHandler struct{}
@@ -14,6 +16,7 @@ type LoginProvider struct {
 
 // Login is capable of providing login access
 type Login struct {
+	db *sqlx.DB
 }
 
 func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,10 +24,10 @@ func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.Method == http.MethodGet:
 		fmt.Println("hit")
-		login.GetCreateCustomerHandler(w, r)
+		login.GetLoginUserHandler(w, r)
 		return
 	case r.Method == http.MethodPost:
-		login.GetCreateCustomerHandler(w, r)
+		login.GetLoginUserHandler(w, r)
 		return
 	default:
 		return
@@ -32,9 +35,9 @@ func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewLoginProvider returns a new Login provider
-func NewLoginProvider() *LoginProvider {
+func NewLoginProvider(db *sqlx.DB) *LoginProvider {
 	return &LoginProvider{
-		&Login{},
+		&Login{db: db},
 	}
 }
 

@@ -30,7 +30,7 @@ func BuildRuntime() Runtime {
 
 	coreProvider := core.NewCoreProvider(&server.Sql, "sql")
 	core := coreProvider.NewCore()
-	loginProvider := login.NewLoginProvider()
+	loginProvider := login.NewLoginProvider(&server.Sql)
 	login := loginProvider.NewLogin()
 	userProvider := user.NewUserProvider()
 	user := userProvider.NewUser()
