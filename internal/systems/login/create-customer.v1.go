@@ -1,5 +1,11 @@
 package login
 
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+)
+
 // Customer
 type Customer struct {
 	CustomerID          uint64 `json:"customer_id"`
@@ -51,4 +57,18 @@ func (l *Login) CreateCustomerV1(p *CreateCustomerV1Params, res *CreateCustomerV
 	}
 	*res = CreateCustomerV1Result{Customer: customer}
 	return nil
+}
+
+func (l *Login) GetCreateCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	res := &CreateCustomerV1Result{}
+	err := l.CreateCustomerV1(nil, res)
+	jsonBytes, err := json.Marshal(res)
+	if err != nil {
+		log.Fatal("error in json")
+		return
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonBytes)
 }

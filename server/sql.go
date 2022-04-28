@@ -1,9 +1,10 @@
-package core
+package server
 
 import (
 	"log"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -22,8 +23,7 @@ func getenv(key string, fallback string) string {
 	return fallback
 }
 
-func connectSQL(dsn string) *sqlx.DB {
+func (sql *Server) connectSQL() *sqlx.DB {
 	log.Print("connecting with mysql...")
-
 	return sqlx.MustConnect("mysql", mysqlDSN)
 }

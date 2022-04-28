@@ -1,8 +1,8 @@
-POST http://localhost:1234/
+GET  http://localhost:1234/login
 
 {
 	"id": 1,
-	"method": "login/create-customer-v1",
+	"method": "login",
 	"params": {
 
 	}
