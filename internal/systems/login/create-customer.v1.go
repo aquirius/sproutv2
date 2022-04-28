@@ -2,6 +2,8 @@ package login
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -59,10 +61,21 @@ func (l *Login) CreateCustomerV1(p *CreateCustomerV1Params, res *CreateCustomerV
 	return nil
 }
 
+type LoginObject struct {
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
 func (l *Login) GetCreateCustomerHandler(w http.ResponseWriter, r *http.Request) {
 	res := &CreateCustomerV1Result{}
 	err := l.CreateCustomerV1(nil, res)
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	req := &LoginObject{}
+	json.Unmarshal(reqBody, req)
 	jsonBytes, err := json.Marshal(res)
+	fmt.Println(res.Customer)
+	fmt.Println(req.Password)
+
 	if err != nil {
 		log.Fatal("error in json")
 		return

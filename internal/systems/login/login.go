@@ -1,6 +1,9 @@
 package login
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type LoginHandler struct{}
 
@@ -17,6 +20,7 @@ func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodGet:
+		fmt.Println("hit")
 		login.GetCreateCustomerHandler(w, r)
 		return
 	case r.Method == http.MethodPost:
