@@ -47,12 +47,12 @@ func run(name string, cmds []string, stdin []byte) error {
 }
 
 func main() {
-	customers, err := filepath.Abs("../backend/schemas/customers.sql")
+	customers, err := filepath.Abs("./schemas/customers.sql")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	plants, err := filepath.Abs("../backend/schemas/plants.sql")
+	plants, err := filepath.Abs("./schemas/plants.sql")
 	if err != nil {
 		panic(err.Error())
 	}
