@@ -1,0 +1,28 @@
+
+CREATE TABLE `customers` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(200) NOT NULL,
+  `password_hash` char(64) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+  `registered_ts` int unsigned NOT NULL,
+  `last_login_ts` int unsigned DEFAULT NULL,
+  `email_confirmation_token` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
+  `email_confirmation_ts` int unsigned DEFAULT NULL,
+  `password_reset_token` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
+  `password_confirmation_ts` int unsigned DEFAULT NULL,
+  `status` enum('active','blocked') NOT NULL DEFAULT 'active',
+  `display_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `image_id` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
+  `cover_id` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `bio` varchar(1500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `salutation` enum('mr','mrs') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `first_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `last_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `birthday` date DEFAULT NULL,
+  `display_language` char(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'en',
+  `country` char(2) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `accounts_email_IDX` (`email`) USING BTREE,
+  UNIQUE KEY `accounts_email_confirmation_token_IDX` (`email_confirmation_token`) USING BTREE,
+  UNIQUE KEY `accounts_password_reset_token_IDX` (`password_reset_token`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

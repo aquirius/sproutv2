@@ -1,8 +1,8 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"log"
 	"net/rpc"
 )
 
@@ -13,12 +13,11 @@ type Item struct {
 
 func main() {
 	var reply Item
-	var db []Item
+	var db *sql.DB
 
 	client, err := rpc.DialHTTP("tcp", "localhost:4040")
-
 	if err != nil {
-		log.Fatalf("Connection error: ", err)
+		panic(err.Error())
 	}
 
 	a := Item{"First", "A first item"}

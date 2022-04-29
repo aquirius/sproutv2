@@ -1,115 +1,55 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net"
 	"net/http"
-	"net/rpc"
+	"os"
+	"sprout/m/v2/internal/systems/core"
+	"sprout/m/v2/internal/systems/login"
+	"sprout/m/v2/internal/systems/user"
+	"sprout/m/v2/server"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
-type Item struct {
-	Title string
-	Body  string
+type Runtime struct {
+	db     *sqlx.DB
+	server *server.Server
+	core   *core.Core
+	login  *login.Login
+	user   *user.User
 }
 
-type API int
-
-var database []Item
-
-func (a *API) GetDB(empty string, reply *[]Item) error {
-	*reply = database
-	return nil
-}
-
-func (a *API) GetByName(title string, reply *Item) error {
-	var getItem Item
-
-	for _, val := range database {
-		if val.Title == title {
-			getItem = val
-		}
+func BuildRuntime() Runtime {
+	// create uploads folder if it doesn't exist
+	if err := os.MkdirAll("uploads", 0777); err != nil {
+		panic(err)
 	}
+	serverProvider := server.NewServerProvider()
+	server := serverProvider.NewServer()
 
-	*reply = getItem
+	coreProvider := core.NewCoreProvider(&server.Sql, "sql")
+	core := coreProvider.NewCore()
+	loginProvider := login.NewLoginProvider(&server.Sql)
+	login := loginProvider.NewLogin()
+	userProvider := user.NewUserProvider()
+	user := userProvider.NewUser()
 
-	return nil
-}
-
-func (a *API) AddItem(item Item, reply *Item) error {
-	database = append(database, item)
-	*reply = item
-	return nil
-}
-
-func (a *API) EditItem(item Item, reply *Item) error {
-	var changed Item
-
-	for idx, val := range database {
-		if val.Title == item.Title {
-			database[idx] = Item{item.Title, item.Body}
-			changed = database[idx]
-		}
+	return Runtime{
+		db:     &server.Sql,
+		server: server,
+		core:   core,
+		login:  login,
+		user:   user,
 	}
-
-	*reply = changed
-	return nil
 }
-
-func (a *API) DeleteItem(item Item, reply *Item) error {
-	var del Item
-
-	for idx, val := range database {
-		if val.Title == item.Title && val.Body == item.Body {
-			database = append(database[:idx], database[idx+1:]...)
-			del = item
-			break
-		}
-	}
-
-	*reply = del
-	return nil
-}
-
 func main() {
-	api := new(API)
-	err := rpc.Register(api)
-	if err != nil {
-		log.Fatal("error registering API", err)
-	}
+	rt := BuildRuntime()
+	mux := http.NewServeMux()
 
-	rpc.HandleHTTP()
-
-	listener, err := net.Listen("tcp", ":4040")
-
-	if err != nil {
-		log.Fatal("Listener error", err)
-	}
-	log.Printf("serving rpc on port %d", 4040)
-	http.Serve(listener, nil)
-
-	if err != nil {
-		log.Fatal("error serving: ", err)
-	}
-
-	fmt.Println("initial database: ", database)
-	a := Item{"first", "a test item"}
-	b := Item{"second", "a second item"}
-	c := Item{"third", "a third item"}
-
-	api.AddItem(a, nil)
-	api.AddItem(b, nil)
-	api.AddItem(c, nil)
-	fmt.Println("second database: ", database)
-
-	api.DeleteItem(b, nil)
-	fmt.Println("third database: ", database)
-
-	api.EditItem(Item{"third", "a new item"}, &Item{"fourth", "a new item"})
-	fmt.Println("fourth database: ", database)
-
-	x := api.GetByName("fourth", &Item{})
-	y := api.GetByName("first", &Item{})
-	fmt.Println(x, y)
-
+	userH := rt.user
+	loginH := rt.login
+	mux.Handle("/users", userH)
+	mux.Handle("/login", loginH)
+	http.ListenAndServe(":1234", mux)
 }

@@ -1,8 +1,9 @@
-POST http://localhost:4040/rpc
+GET  http://localhost:1234/login
 
 {
-    "id": 0,
-    "method": "API.AddItem",
-    "params": [
-    ]
+	"id": 1,
+	"method": "login",
+	"params": {
+
+	}
 }
