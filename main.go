@@ -30,9 +30,11 @@ func BuildRuntime() Runtime {
 
 	coreProvider := core.NewCoreProvider(&server.Sql, "sql")
 	core := coreProvider.NewCore()
+
 	loginProvider := login.NewLoginProvider(&server.Sql)
 	login := loginProvider.NewLogin()
-	userProvider := user.NewUserProvider()
+
+	userProvider := user.NewUserProvider(server.Sql)
 	user := userProvider.NewUser()
 
 	return Runtime{
@@ -48,8 +50,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	userH := rt.user
-	loginH := rt.login
-	mux.Handle("/users", userH)
-	mux.Handle("/login", loginH)
+	mux.Handle("/login", userH)
+	mux.Handle("/register", userH)
+
 	http.ListenAndServe(":1234", mux)
 }

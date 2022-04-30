@@ -1,5 +1,5 @@
 
-CREATE TABLE `customers` (
+CREATE TABLE `user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(200) NOT NULL,
   `password_hash` char(64) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
@@ -19,10 +19,10 @@ CREATE TABLE `customers` (
   `first_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `last_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `birthday` date DEFAULT NULL,
-  `display_language` char(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'en',
+  `language` char(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'en',
   `country` char(2) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `accounts_email_IDX` (`email`) USING BTREE,
-  UNIQUE KEY `accounts_email_confirmation_token_IDX` (`email_confirmation_token`) USING BTREE,
-  UNIQUE KEY `accounts_password_reset_token_IDX` (`password_reset_token`) USING BTREE
+  UNIQUE KEY `user_email_IDX` (`email`) USING BTREE,
+  UNIQUE KEY `user_email_confirmation_token_IDX` (`email_confirmation_token`) USING BTREE,
+  UNIQUE KEY `user_password_reset_token_IDX` (`password_reset_token`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

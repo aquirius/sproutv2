@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type UserHandler struct{}
@@ -16,25 +18,31 @@ type UserProvider struct {
 
 // Login is capable of providing login access
 type User struct {
+	db sqlx.DB
 }
 
 func (user *User) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
+
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodGet:
-		fmt.Println("get user")
-		user.GetCreateCustomer(w, r)
+
 		return
 	case r.Method == http.MethodPost:
-		fmt.Println("post user")
-		user.GetCreateCustomer(w, r)
+		if r.URL.Path == "/login" {
+			user.GetLoginUserHandler(w, r)
+		}
+		if r.URL.Path == "/register" {
+			user.GetRegisterUserHandler(w, r)
+		}
 		return
 	default:
 		return
 	}
 }
 
-func (user *User) GetCreateCustomer(w http.ResponseWriter, r *http.Request) {
+func (user *User) GetCreateUser(w http.ResponseWriter, r *http.Request) {
 	jsonBytes, err := json.Marshal("")
 	if err != nil {
 		log.Fatal("error in json")
@@ -47,10 +55,10 @@ func (user *User) GetCreateCustomer(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewLoginProvider returns a new Login provider
-func NewUserProvider() *UserProvider {
+func NewUserProvider(db sqlx.DB) *UserProvider {
 
 	return &UserProvider{
-		&User{},
+		&User{db: db},
 	}
 }
 

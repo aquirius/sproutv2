@@ -47,17 +47,17 @@ func run(name string, cmds []string, stdin []byte) error {
 }
 
 func main() {
-	customers, err := filepath.Abs("./schemas/customers.sql")
+	users, err := filepath.Abs("./schemas/user.sql")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	plants, err := filepath.Abs("./schemas/plants.sql")
+	plants, err := filepath.Abs("./schemas/plant.sql")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	if len(customers) <= 0 {
+	if len(users) <= 0 {
 		fmt.Errorf("no customers schema found")
 	}
 
@@ -67,7 +67,7 @@ func main() {
 
 	out := []string{}
 
-	c, err := ioutil.ReadFile(customers)
+	c, err := ioutil.ReadFile(users)
 	if err != nil {
 		panic(err.Error())
 	}

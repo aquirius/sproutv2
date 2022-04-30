@@ -16,18 +16,17 @@ type LoginProvider struct {
 
 // Login is capable of providing login access
 type Login struct {
-	db *sqlx.DB
+	db sqlx.DB
 }
 
 func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodGet:
 		fmt.Println("hit")
-		login.GetLoginUserHandler(w, r)
 		return
 	case r.Method == http.MethodPost:
-		login.GetLoginUserHandler(w, r)
 		return
 	default:
 		return
@@ -37,7 +36,7 @@ func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // NewLoginProvider returns a new Login provider
 func NewLoginProvider(db *sqlx.DB) *LoginProvider {
 	return &LoginProvider{
-		&Login{db: db},
+		&Login{db: *db},
 	}
 }
 

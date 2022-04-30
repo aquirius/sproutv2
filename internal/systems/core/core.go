@@ -11,14 +11,14 @@ type CoreProvider struct {
 
 // Core is capable of providing core access
 type Core struct {
-	dbh *sqlx.DB
+	dbh sqlx.DB
 }
 
 // NewCoreProvider returns a new Core provider
 func NewCoreProvider(dbh *sqlx.DB, urlPrefixBackend string) *CoreProvider {
 	return &CoreProvider{
 		&Core{
-			dbh: dbh,
+			dbh: *dbh,
 		},
 	}
 }
