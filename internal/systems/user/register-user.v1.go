@@ -77,7 +77,7 @@ func (l *User) GetRegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = l.RegisterUserV1(req, nil)
 	if err != nil {
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusInternalServerError)
 		jsonBytes, err := json.Marshal("error")
 		if err != nil {
 			log.Fatal("error in json")
@@ -86,6 +86,5 @@ func (l *User) GetRegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(jsonBytes)
 		return
 	}
-
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }
