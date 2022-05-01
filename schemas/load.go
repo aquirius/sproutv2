@@ -57,8 +57,17 @@ func main() {
 		panic(err.Error())
 	}
 
+	genetics, err := filepath.Abs("./schemas/genetic.sql")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if len(genetics) <= 0 {
+		fmt.Errorf("no genetic schema found")
+	}
+
 	if len(users) <= 0 {
-		fmt.Errorf("no customers schema found")
+		fmt.Errorf("no user schema found")
 	}
 
 	if len(plants) <= 0 {
@@ -75,8 +84,11 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-
-	out = append(out, string(c), string(p))
+	g, err := ioutil.ReadFile(genetics)
+	if err != nil {
+		panic(err.Error())
+	}
+	out = append(out, string(c), string(p), string(g))
 
 	s := ""
 	for _, v := range out {

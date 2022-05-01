@@ -1,4 +1,4 @@
-package login
+package plant
 
 import (
 	"fmt"
@@ -7,20 +7,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type LoginHandler struct{}
+type PlantHandler struct{}
 
 // LoginProvider provides *Login
-type LoginProvider struct {
-	Login *Login
+type PlantProvider struct {
+	Plant *Plant
 }
 
 // Login is capable of providing login access
-type Login struct {
+type Plant struct {
 	db sqlx.DB
 }
 
-func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+func (plant *Plant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodGet:
@@ -34,12 +33,12 @@ func (login *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewLoginProvider returns a new Login provider
-func NewLoginProvider(db *sqlx.DB) *LoginProvider {
-	return &LoginProvider{
-		&Login{db: *db},
+func NewPlantProvider(db *sqlx.DB) *PlantProvider {
+	return &PlantProvider{
+		&Plant{db: *db},
 	}
 }
 
-func (b *LoginProvider) NewLogin() *Login {
-	return b.Login
+func (b *PlantProvider) NewPlant() *Plant {
+	return b.Plant
 }
