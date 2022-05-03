@@ -50,7 +50,7 @@ type RegisterUserV1Result struct {
 }
 
 //CreateCustomerV1 creates a customer object with given arguments
-func (l *User) RegisterUserV1(p *RegisterUserV1Params, res *RegisterUserV1Result) error {
+func (l *UserSystem) RegisterUserV1(p *RegisterUserV1Params, res *RegisterUserV1Result) error {
 	fmt.Println(p)
 	if p == nil {
 		return fmt.Errorf("no params")
@@ -63,7 +63,7 @@ func (l *User) RegisterUserV1(p *RegisterUserV1Params, res *RegisterUserV1Result
 	return nil
 }
 
-func (l *User) GetRegisterUserHandler(w http.ResponseWriter, r *http.Request) {
+func (l *UserSystem) GetRegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	fmt.Println("register")

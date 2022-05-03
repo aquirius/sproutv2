@@ -18,7 +18,7 @@ type LoginUserV1Result struct {
 }
 
 //LoginUser
-func (l *User) LoginUserV1(p *LoginUserV1Params, res *LoginUserV1Result) error {
+func (l *UserSystem) LoginUserV1(p *LoginUserV1Params, res *LoginUserV1Result) error {
 	var accountID *uint64
 	if err := l.db.Get(&accountID, `SELECT id FROM user WHERE display_name = ? AND password_hash = ?`, p.Username, p.Password); err != nil {
 		if err == sql.ErrNoRows {
@@ -32,7 +32,7 @@ func (l *User) LoginUserV1(p *LoginUserV1Params, res *LoginUserV1Result) error {
 	return nil
 }
 
-func (l *User) GetLoginUserHandler(w http.ResponseWriter, r *http.Request) {
+func (l *UserSystem) GetLoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	req := &LoginUserV1Params{}
 	res := &LoginUserV1Result{}
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -54,7 +54,5 @@ func (l *User) GetLoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("marshal")
 		return
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	w.Write(resBody)
 }

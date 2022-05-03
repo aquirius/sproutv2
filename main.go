@@ -3,10 +3,10 @@ package main
 import (
 	"net/http"
 	"os"
+	"sprout/m/v2/internal/server"
 	"sprout/m/v2/internal/systems/core"
 	"sprout/m/v2/internal/systems/plant"
 	"sprout/m/v2/internal/systems/user"
-	"sprout/m/v2/server"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -16,8 +16,8 @@ type Runtime struct {
 	db     *sqlx.DB
 	server *server.Server
 	core   *core.Core
-	plant  *plant.Plant
-	user   *user.User
+	plant  *plant.PlantSystem
+	user   *user.UserSystem
 }
 
 func BuildRuntime() Runtime {

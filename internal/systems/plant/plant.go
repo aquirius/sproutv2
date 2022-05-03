@@ -11,19 +11,22 @@ type PlantHandler struct{}
 
 // LoginProvider provides *Login
 type PlantProvider struct {
-	Plant *Plant
+	PlantSystem *PlantSystem
 }
 
 // Login is capable of providing login access
-type Plant struct {
+type PlantSystem struct {
 	db sqlx.DB
 }
 
-func (plant *Plant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (plant *PlantSystem) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	switch {
-	case r.Method == http.MethodGet:
+	case r.Method == http.MethodPost:
 		fmt.Println("hit")
+		plant.GetPlantHandler(w, r)
 		return
 	case r.Method == http.MethodPost:
 		return
@@ -35,10 +38,10 @@ func (plant *Plant) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // NewLoginProvider returns a new Login provider
 func NewPlantProvider(db *sqlx.DB) *PlantProvider {
 	return &PlantProvider{
-		&Plant{db: *db},
+		&PlantSystem{db: *db},
 	}
 }
 
-func (b *PlantProvider) NewPlant() *Plant {
-	return b.Plant
+func (b *PlantProvider) NewPlant() *PlantSystem {
+	return b.PlantSystem
 }

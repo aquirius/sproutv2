@@ -2,9 +2,9 @@
 CREATE TABLE `plant` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `uuid` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
-  `basket_id` int unsigned NOT NULL,
+  `basket_id` int unsigned DEFAULT NULL,
   `name` varchar(100) NOT NULL,
-  `description` varchar(500) NOT NULL,
+  `description` varchar(500) DEFAULT NULL,
   `preview_image_uuid` char(36) CHARACTER SET ascii COLLATE ascii_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `plant_uuid_IDX` (`uuid`) USING BTREE,
