@@ -57,9 +57,18 @@ func main() {
 		panic(err.Error())
 	}
 
+	baskets, err := filepath.Abs("./schemas/basket.sql")
+	if err != nil {
+		panic(err.Error())
+	}
+
 	genetics, err := filepath.Abs("./schemas/genetic.sql")
 	if err != nil {
 		panic(err.Error())
+	}
+
+	if len(baskets) <= 0 {
+		fmt.Errorf("no basket schema found")
 	}
 
 	if len(genetics) <= 0 {
@@ -80,6 +89,10 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
+	b, err := ioutil.ReadFile(baskets)
+	if err != nil {
+		panic(err.Error())
+	}
 	p, err := ioutil.ReadFile(plants)
 	if err != nil {
 		panic(err.Error())
@@ -88,7 +101,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	out = append(out, string(c), string(p), string(g))
+	out = append(out, string(c), string(p), string(g), string(b))
 
 	s := ""
 	for _, v := range out {
