@@ -16,7 +16,7 @@ type UserProvider struct {
 
 // Login is capable of providing login access
 type UserSystem struct {
-	db sqlx.DB
+	db *sqlx.DB
 }
 
 func (user *UserSystem) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func (user *UserSystem) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewLoginProvider returns a new Login provider
-func NewUserProvider(db sqlx.DB) *UserProvider {
+func NewUserProvider(db *sqlx.DB) *UserProvider {
 
 	return &UserProvider{
 		&UserSystem{db: db},

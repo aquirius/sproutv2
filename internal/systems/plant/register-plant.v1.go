@@ -10,11 +10,11 @@ import (
 	"github.com/google/uuid"
 )
 
-// User
+// Plant
 type RegisterPlant struct {
-	Email       string `json:"email"`
+	UUID        string `json:"id"`
 	DisplayName string `json:"display_name"`
-	Password    string `json:"password"`
+	Description string `json:"description"`
 }
 
 type RegisterPlantV1Params struct {

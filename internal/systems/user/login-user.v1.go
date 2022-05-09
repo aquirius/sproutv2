@@ -19,6 +19,7 @@ type LoginUserV1Result struct {
 
 //LoginUser
 func (l *UserSystem) LoginUserV1(p *LoginUserV1Params, res *LoginUserV1Result) error {
+	//TODO validators
 	var accountID *uint64
 	if err := l.db.Get(&accountID, `SELECT id FROM user WHERE display_name = ? AND password_hash = ?`, p.Username, p.Password); err != nil {
 		if err == sql.ErrNoRows {

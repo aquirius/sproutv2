@@ -1,59 +1,63 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
-	"sprout/m/v2/internal/server"
-	"sprout/m/v2/internal/systems/core"
 	"sprout/m/v2/internal/systems/plant"
 	"sprout/m/v2/internal/systems/user"
 
+	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
 type Runtime struct {
-	db     *sqlx.DB
-	server *server.Server
-	core   *core.Core
-	plant  *plant.PlantSystem
-	user   *user.UserSystem
+	sql   *sqlx.DB
+	redis *redis.Client
 }
 
-func BuildRuntime() Runtime {
+func connectSQL() *sqlx.DB {
+	log.Print("connecting with mysql...")
+	return sqlx.MustConnect("mysql", "sprout:sprout@tcp(localhost:3311)/sprout")
+}
+
+func connectRedis() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     "localhost:6969",
+		Password: "",
+		DB:       0,
+	})
+
+}
+
+func BuildRuntime(sql *sqlx.DB, redis *redis.Client) Runtime {
 	// create uploads folder if it doesn't exist
 	if err := os.MkdirAll("uploads", 0777); err != nil {
 		panic(err)
 	}
-	serverProvider := server.NewServerProvider()
-	server := serverProvider.NewServer()
-
-	coreProvider := core.NewCoreProvider(&server.Sql, "sql")
-	core := coreProvider.NewCore()
-
-	plantProvider := plant.NewPlantProvider(&server.Sql)
-	plant := plantProvider.NewPlant()
-
-	userProvider := user.NewUserProvider(server.Sql)
-	user := userProvider.NewUser()
 
 	return Runtime{
-		db:     &server.Sql,
-		server: server,
-		core:   core,
-		plant:  plant,
-		user:   user,
+		sql:   sql,
+		redis: redis,
 	}
 }
 func main() {
-	rt := BuildRuntime()
+	rt := BuildRuntime(
+		connectSQL(),
+		connectRedis(),
+	)
 	mux := http.NewServeMux()
 
-	userH := rt.user
-	plantH := rt.plant
-	mux.Handle("/login", userH)
-	mux.Handle("/register", userH)
-	mux.Handle("/plants", plantH)
+	//register all system providers
+	plantProvider := plant.NewPlantProvider(rt.sql)
+	plant := plantProvider.NewPlant()
+	userProvider := user.NewUserProvider(rt.sql)
+	user := userProvider.NewUser()
+
+	mux.Handle("/login", user)
+	mux.Handle("/register", user)
+	mux.Handle("/plants", plant)
 
 	http.ListenAndServe(":1234", mux)
 }

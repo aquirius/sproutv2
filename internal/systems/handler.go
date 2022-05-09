@@ -8,9 +8,9 @@ import (
 )
 
 type Systems struct {
-	plant plant.Plant
-	core  core.Core
-	user  user.User
+	plant plant.PlantSystem
+	core  core.CoreSystem
+	user  user.UserSystem
 }
 
 func (s *Systems) ServeHTTP(w http.ResponseWriter, r *http.Request) {

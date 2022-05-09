@@ -1,7 +1,6 @@
 package plant
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
@@ -25,7 +24,6 @@ func (plant *PlantSystem) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	switch {
 	case r.Method == http.MethodPost:
-		fmt.Println("hit")
 		plant.GetPlantHandler(w, r)
 		return
 	case r.Method == http.MethodPost:

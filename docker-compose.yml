@@ -12,4 +12,11 @@ services:
       - MYSQL_PASSWORD=sprout
       - MYSQL_ROOT_PASSWORD=sprout
       - MYSQL_ROOT_HOST=%
+      - MYSQL_PORT=3311
     command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci"
+  redisfanbase:
+    image: redis:rc-alpine
+    container_name: redissprout
+    restart: unless-stopped
+    ports:
+      - "6969:6969"

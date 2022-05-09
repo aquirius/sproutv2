@@ -6,23 +6,23 @@ import (
 
 // CoreProvider provides *Core
 type CoreProvider struct {
-	Core *Core
+	Core *CoreSystem
 }
 
 // Core is capable of providing core access
-type Core struct {
+type CoreSystem struct {
 	dbh sqlx.DB
 }
 
 // NewCoreProvider returns a new Core provider
 func NewCoreProvider(dbh *sqlx.DB, urlPrefixBackend string) *CoreProvider {
 	return &CoreProvider{
-		&Core{
+		&CoreSystem{
 			dbh: *dbh,
 		},
 	}
 }
 
-func (b *CoreProvider) NewCore() *Core {
+func (b *CoreProvider) NewCore() *CoreSystem {
 	return b.Core
 }
