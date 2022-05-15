@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -44,6 +45,7 @@ func (l *User) GetLoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = l.LoginUserV1(req, res)
+	fmt.Println(req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		resBody, _ = json.Marshal("no-user-found")
